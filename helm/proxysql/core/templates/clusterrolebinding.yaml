@@ -1,0 +1,14 @@
+{{- if not (lookup "rbac.authorization.k8s.io/v1" "ClusterRoleBinding" "proxysql" "proxysql-discovery") }}
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: proxysql-discovery
+subjects:
+- kind: ServiceAccount
+  name: proxysql
+  namespace: proxysql
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

@@ -1,0 +1,29 @@
+replicaCount: 3
+
+image:
+  # pointing to the local (on my laptop) proxysql image tagged latest
+  repository: proxysql
+  tag: latest
+  pullPolicy: IfNotPresent
+  ## to use the official images
+  # repository: proxysql/proxysql
+  # tag: 2.5.5-debian
+  # pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+nameOverride: ""
+
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 6032
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

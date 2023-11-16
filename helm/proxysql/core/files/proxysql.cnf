@@ -1,0 +1,165 @@
+datadir="/var/lib/proxysql"
+
+# define the admin variables
+admin_variables=
+{
+  admin_credentials                           = "admin:admin;radmin:radmin"
+  cluster_check_interval_ms                   = 200
+  cluster_check_status_frequency              = 100
+  cluster_mysql_query_rules_diffs_before_sync = 3
+  cluster_mysql_query_rules_save_to_disk      = true
+  cluster_mysql_servers_diffs_before_sync     = 3
+  cluster_mysql_servers_save_to_disk          = true
+  cluster_mysql_users_diffs_before_sync       = 3
+  cluster_mysql_users_save_to_disk            = true
+  cluster_password                            = "radmin"
+  cluster_proxysql_servers_diffs_before_sync  = 3
+  cluster_proxysql_servers_save_to_disk       = true
+  cluster_username                            = "radmin"
+  mysql_ifaces                                = "0.0.0.0:6032"
+  refresh_interval                            = 2000
+  vacuum_stats                                = true
+  web_enabled                                 = false
+  web_port                                    = 6080
+}
+
+mysql_variables=
+{
+  commands_stats                              = true
+  connect_retries_delay                       = 100
+  connect_retries_on_failure                  = 10
+  connect_timeout_server                      = 3000
+  default_query_delay                         = 0
+  default_query_timeout                       = 86400000
+  default_schema                              = "information_schema"
+  free_connections_pct                        = 50
+  have_compress                               = true
+  interfaces                                  = "0.0.0.0:6033;/tmp/proxysql.sock"
+  log_mysql_warnings_enabled                  = true
+  log_unhealthy_connections                   = false
+  max_connections                             = 1000
+  multiplexing                                = true
+  ping_interval_server_msec                   = 120000
+  ping_timeout_server                         = 500
+  poll_timeout                                = 2000
+  server_version                              = "8.0.28"
+  sessions_sort                               = true
+  show_processlist_extended                   = 1
+  stacksize                                   = 1048576
+  threads                                     = 2
+  verbose_query_error                         = true
+
+  # this enables FRONTEND ssl support. backend is configured on a per-server basis in the mysql servers block
+  # or in our case, on a just one server basis.
+  have_ssl                                    = true
+
+  query_digests_keep_comment                = true
+  query_digests_lowercase                   = true
+  query_digests_no_digits                   = false
+  query_digests_normalize_digest_text       = false
+  query_digests_replace_null                = true
+
+  monitor_username                            = "root"
+  monitor_password                            = "rootpw"
+  monitor_history                             = 600000
+  monitor_connect_interval                    = 20000
+  monitor_ping_interval                       = 10000
+  monitor_read_only_interval                  = 1500
+  monitor_read_only_timeout                   = 500
+}
+
+# defines all the MySQL servers
+mysql_servers =
+(
+  {
+    address           = "mysql-us1-primary.mysql.svc.cluster.local"
+    port              = 3306
+    hostgroup         = 10
+    max_connections   = 250
+    compression       = 1
+  },
+  {
+    address           = "mysql-us1-secondary.mysql.svc.cluster.local"
+    port              = 3306
+    hostgroup         = 11
+    max_connections   = 250
+    compression       = 1
+  },
+  {
+    address           = "mysql-us2-primary.mysql.svc.cluster.local"
+    port              = 3306
+    hostgroup         = 20
+    max_connections   = 250
+    compression       = 1
+  },
+  {
+    address           = "mysql-us2-secondary.mysql.svc.cluster.local"
+    port              = 3306
+    hostgroup         = 21
+    max_connections   = 250
+    compression       = 1
+  },
+)
+
+
+# defines all the MySQL users
+mysql_users:
+(
+  {
+    username                = "persona-web-us1"
+    password                = "persona-web-us1"
+    default_schema          = "persona-web-us1"
+    default_hostgroup       = 10
+    active                  = 1
+    transaction_persistent  = 1
+    max_connections         = 2500
+  },
+  {
+    username                = "persona-web-us1-ro"
+    password                = "persona-web-us1-ro"
+    default_schema          = "persona-web-us1"
+    default_hostgroup       = 11
+    active                  = 1
+    transaction_persistent  = 1
+    max_connections         = 2500
+  },
+  {
+    username                = "persona-web-us2"
+    password                = "persona-web-us2"
+    default_schema          = "persona-web-us2"
+    default_hostgroup       = 20
+    active                  = 1
+    transaction_persistent  = 1
+    max_connections         = 2500
+  },
+  {
+    username                = "persona-web-us2-ro"
+    password                = "persona-web-us2-ro"
+    default_schema          = "persona-web-us2"
+    default_hostgroup       = 21
+    active                  = 1
+    transaction_persistent  = 1
+    max_connections         = 2500
+  },
+)
+
+# defines MySQL Query Rules
+mysql_query_rules:
+(
+)
+
+# defines the scheduler processes
+scheduler=
+(
+  {
+    id          = 1
+    active      = 1
+    interval_ms = 10000
+    filename    = "/usr/bin/ruby"
+    arg1        = "/usr/local/bin/cluster-core.rb"
+    arg2        = ""
+    arg3        = ""
+    arg4        = ""
+    arg5        = ""
+  }
+)

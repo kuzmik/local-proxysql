@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "proxysql.fullname" . }}
+  labels:
+{{ include "proxysql.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "proxysql.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "proxysql.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      serviceAccountName: proxysql
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: proxysql
+              containerPort: 6033
+              protocol: TCP
+            - name: admin
+              containerPort: 6032
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/proxysql
+              name: proxysql-var
+              readOnly: false
+            - name: {{ .Release.Name }}-config
+              mountPath: /etc/proxysql.cnf
+              subPath: proxysql.cnf
+            - name: {{ .Release.Name }}-config
+              mountPath: /root/.my.cnf
+              subPath: my.cnf
+            - name: {{ .Release.Name }}-passwords
+              mountPath: "/var/lib/proxysql/secrets"
+              readOnly: true
+          livenessProbe:
+            exec:
+              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
+          readinessProbe:
+            exec:
+              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - emptyDir: {}
+          name: proxysql-var
+        - name: {{ .Release.Name }}-config
+          configMap:
+            name: {{ .Release.Name }}-cm
+        - name: {{ .Release.Name }}-passwords
+          secret:
+            secretName: {{ .Release.Name }}-passwords

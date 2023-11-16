@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-cm
+data: 
+  proxysql.cnf: |
+{{ tpl (.Files.Get "files/proxysql.cnf") . | indent 4 }}
+  my.cnf: |
+{{ tpl (.Files.Get "files/my.cnf") . | indent 4 }}
