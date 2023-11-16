@@ -56,19 +56,3 @@ proxysql_servers =
         comment   = "default servers from config"
     }
 )
-
-# defines the scheduler processes
-scheduler=
-(
-  {
-    id          = 1
-    active      = 1
-    interval_ms = 10000
-    filename    = "/usr/bin/ruby"
-    arg1        = "/usr/local/bin/cluster-satellite.rb"
-    arg2        = ""
-    arg3        = ""
-    arg4        = ""
-    arg5        = ""
-  }
-)

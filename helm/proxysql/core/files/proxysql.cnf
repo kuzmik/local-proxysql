@@ -147,19 +147,3 @@ mysql_users:
 mysql_query_rules:
 (
 )
-
-# defines the scheduler processes
-scheduler=
-(
-  {
-    id          = 1
-    active      = 1
-    interval_ms = 10000
-    filename    = "/usr/bin/ruby"
-    arg1        = "/usr/local/bin/cluster-core.rb"
-    arg2        = ""
-    arg3        = ""
-    arg4        = ""
-    arg5        = ""
-  }
-)
