@@ -53,6 +53,10 @@ This is the part of the proxysql cluster that will actually serve mysql traffic.
 
 Configuration changes on these pods will NOT propagate up to the core pods, and therefore will not make it to any other proxysql pod.
 
+## Known Issues
+
+- If you deploy core and satellite at the same time, the satellite will attempt to connect to the core cluster immediately and fail because the core service isn't up yet. The satellite container will get killed and on restart it will connect properly.
+
 ## Misc
 
 * How to [Disable portions of the annotations feature](https://github.com/sysown/proxysql/issues/4325#issuecomment-1681630863)

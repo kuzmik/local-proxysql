@@ -9,8 +9,10 @@ if [[ "$context" != "orbstack" ]] && [[ "$context" != "docker-desktop" ]]; then
   exit 1
 fi
 
+DIR=$(dirname -- "${BASH_SOURCE[0]}")
+
 # Build the customized (sorta) ProxySQL docker image
-pushd helm/proxysql
+pushd "$DIR/../helm/proxysql"
   docker build -t proxysql .
 popd
 
@@ -22,12 +24,12 @@ kubectl get namespace mysql > /dev/null 2>&1 \
 
 ## Create some Configmaps that hold the MySQL init scripts, if they don't already exist
 kubectl get configmap -n mysql us1-initdb > /dev/null 2>&1 \
-  || kubectl create configmap -n mysql us1-initdb --from-file=./helm/data/mysql-us1.sql
+  || kubectl create configmap -n mysql us1-initdb --from-file="$DIR/../helm/data/mysql-us1.sql"
 kubectl get configmap -n mysql us2-initdb > /dev/null 2>&1 \
-  || kubectl create configmap -n mysql us2-initdb --from-file=./helm/data/mysql-us2.sql
+  || kubectl create configmap -n mysql us2-initdb --from-file="$DIR/../helm/data/mysql-us2.sql"
 
 ## Install the MySQL us1 and us2 instances, each of which has 1 replica
-helm install mysql-us1 -n mysql ./helm/mysql \
+helm install mysql-us1 -n mysql "$DIR/../helm/mysql" \
   --set nameOverride="mysql-us1" \
   --set architecture="replication" \
   --set auth.rootPassword="rootpw" \
@@ -37,7 +39,7 @@ helm install mysql-us1 -n mysql ./helm/mysql \
   --set auth.password="persona-web-us1" \
   --set initdbScriptsConfigMap="us1-initdb"
 
-helm install mysql-us2 -n mysql ./helm/mysql \
+helm install mysql-us2 -n mysql "$DIR/../helm/mysql" \
   --set nameOverride="mysql-us2" \
   --set architecture="replication" \
   --set auth.rootPassword="rootpw" \
@@ -59,9 +61,12 @@ kubectl get namespace proxysql > /dev/null 2>&1 \
   || kubectl create ns proxysql
 
 ## ProxySQL leader cluster, which manages the configuration state of the rest of the cluster
-helm install proxysql-core -n proxysql ./helm/proxysql/core
+helm install proxysql-core -n proxysql "$DIR/../helm/proxysql/core"
+
+echo "Sleeping 10s to allow core to finish coming up"
+sleep 10
 
 ## ProxySQL main cluster, which will be serving the actual proxied sql traffic
-helm install proxysql-satellite -n proxysql ./helm/proxysql/satellite
+helm install proxysql-satellite -n proxysql "$DIR/../helm/proxysql/satellite"
 
 # End ProxySQL infra

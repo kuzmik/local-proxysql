@@ -21,7 +21,28 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+      # initContainers:
+      #   # sample init container, will be used for secrets work in the future
+      #   - name: install
+      #     image: busybox:1.28
+      #     command:
+      #     - env
+      #     volumeMounts:
+      #     - name: proxysql-var
+      #       mountPath: "/proxysql"
       containers:
+        {{- if .Values.agentSidecar.enabled }}
+        - name: proxysql-agent
+          image: "{{ .Values.agentSidecar.image.repository }}:{{ .Values.agentSidecar.image.tag }}"
+          imagePullPolicy: {{ .Values.agentSidecar.image.pullPolicy }}
+          command:
+            - /proxysql-agent
+            - --start_delay=5
+            - --run_mode=core
+          volumeMounts:
+          - name: proxysql-var
+            mountPath: "/var/lib/proxysql"
+        {{- end }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -45,12 +66,21 @@ spec:
             - name: {{ .Release.Name }}-passwords
               mountPath: "/var/lib/proxysql/secrets"
               readOnly: true
+          startupProbe:
+            exec:
+              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
+            initialDelaySeconds: 10
+            periodSeconds: 5
           livenessProbe:
             exec:
               command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
+            initialDelaySeconds: 5
+            periodSeconds: 15
           readinessProbe:
             exec:
               command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
+            initialDelaySeconds: 5
+            periodSeconds: 15
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
     {{- with .Values.nodeSelector }}
