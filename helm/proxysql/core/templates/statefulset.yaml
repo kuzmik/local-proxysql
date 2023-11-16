@@ -45,8 +45,10 @@ spec:
             - --start_delay=5
             - --run_mode=core
           volumeMounts:
-          - name: proxysql-var
-            mountPath: "/var/lib/proxysql"
+            - mountPath: /tmp
+              name: proxysql-tmp
+            - mountPath: /var/lib/proxysql
+              name: proxysql-var
         {{- end }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -56,6 +58,8 @@ spec:
               containerPort: 6032
               protocol: TCP
           volumeMounts:
+            - mountPath: /tmp
+              name: proxysql-tmp
             - mountPath: /var/lib/proxysql
               name: proxysql-var
               readOnly: false
@@ -63,20 +67,32 @@ spec:
               mountPath: /etc/proxysql.cnf
               subPath: proxysql.cnf
             - name: {{ .Release.Name }}-config
-              mountPath: /tmp/hg-scheduler.bash
-              subPath: hg-scheduler.bash
-            - name: {{ .Release.Name }}-config
-              mountPath: /root/.my.cnf
+              mountPath: /var/lib/proxysql/.my.cnf
               subPath: my.cnf
             - name: {{ .Release.Name }}-passwords
               mountPath: "/var/lib/proxysql/secrets"
               readOnly: true
-          livenessProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
+          # all three probes are just pings for core pods, since we don't want to go unhealthy
+          # if a backend vanishes for core pods.
+          startupProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 2
           readinessProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
     {{- with .Values.nodeSelector }}
@@ -92,6 +108,8 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
+        - emptyDir: {}
+          name: proxysql-tmp
         - emptyDir: {}
           name: proxysql-var
         - name: {{ .Release.Name }}-config

@@ -42,8 +42,10 @@ spec:
             - --start_delay=5
             - --run_mode=satellite
           volumeMounts:
-          - name: proxysql-var
-            mountPath: "/var/lib/proxysql"
+            - mountPath: /tmp
+              name: proxysql-tmp
+            - mountPath: /var/lib/proxysql
+              name: proxysql-var
         {{- end }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -56,6 +58,8 @@ spec:
               containerPort: 6032
               protocol: TCP
           volumeMounts:
+            - mountPath: /tmp
+              name: proxysql-tmp
             - mountPath: /var/lib/proxysql
               name: proxysql-var
               readOnly: false
@@ -63,25 +67,34 @@ spec:
               mountPath: /etc/proxysql.cnf
               subPath: proxysql.cnf
             - name: {{ .Release.Name }}-config
-              mountPath: /root/.my.cnf
+              mountPath: /var/lib/proxysql/.my.cnf
               subPath: my.cnf
             - name: {{ .Release.Name }}-passwords
               mountPath: "/var/lib/proxysql/secrets"
               readOnly: true
+          # this appears to not work in orbstack k8s; need to test in staging
+          lifecycle:
+            preStop:
+              httpGet:
+                port: 8080
+                path: /shutdown
           startupProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
-            initialDelaySeconds: 10
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 8080
+            initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
-            initialDelaySeconds: 5
-            periodSeconds: 15
-          readinessProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
-            initialDelaySeconds: 5
+            httpGet:
+              path: /healthz/live
+              port: 8080
+            initialDelaySeconds: 10
             periodSeconds: 15
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
@@ -98,6 +111,8 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       volumes:
+        - emptyDir: {}
+          name: proxysql-tmp
         - emptyDir: {}
           name: proxysql-var
         - name: {{ .Release.Name }}-config

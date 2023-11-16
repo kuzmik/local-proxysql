@@ -10,6 +10,15 @@ This assumes you have a k8s cluster on hand; we're installing some helm charts i
 
 **Note**: the latest mysql in homebrew is [not compatible](https://github.com/sysown/proxysql/issues/4300) with the proxysql admin interface; you either need to use `mysql-client@8.0` or just exec into the contoller pods to access the mysql admin interface.
 
+## ProxySQL Agent
+
+I've gotten rid of most of the ruby and am moving to using the [proxysql-agent](https://github.com/kuzmik/proxysql-agent) sidecar. To run this repo on any version other than the [v1.0 tag](https://github.com/kuzmik/local-proxysql/tree/v1.0), you'll need to clone the ProxySQL agent repo and build the docker image locally. I didn't really want to mess with git submodules for this, and want to release the agent as a standalone product.
+
+Easy two step process to build the local docker image for proxysql-agent:
+
+1. `git clone git@github.com:kuzmik/proxysql-agent.git`
+1. `cd proxysql-agent && make docker`
+
 ## TL;DR LET ME INNNNN
 
 Run [./bin/setup.sh](./bin/setup.sh) to create the test infra:
@@ -61,7 +70,7 @@ helm install mysql-us2 -n mysql ./helm/mysql \
 
 For this step, we're creating a proxysql core statefulset cluster and a proxysql satellite deployment cluster. The core cluster is the "leader" and is in charge of distributing the configuration changes to the satellite cluster. The satellites are configured to automatically connect to the core service on boot.
 
-If you want to just test proxysql changes, yuou can run [./bin/reset-proxysql.sh](./bin/reset-proxusql.sh) to reinstall it without having to sit thruogh a full teardown/setup. This is mostly useful when I am testing changes to the proxysql-agent docker image.
+If you want to just test proxysql changes, yuou can run [./bin/reset-proxysql.sh](./bin/reset-proxysql.sh) to reinstall it without having to sit thruogh a full teardown/setup. This is mostly useful when I am testing changes to the proxysql-agent docker image.
 
 ```shell
 kubectl get namespace proxysql > /dev/null 2>&1 \
