@@ -15,6 +15,8 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "proxysql.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        app: proxysql
+        component: satellite
     spec:
       serviceAccountName: proxysql
     {{- with .Values.imagePullSecrets }}
@@ -36,9 +38,9 @@ spec:
           image: "{{ .Values.agentSidecar.image.repository }}:{{ .Values.agentSidecar.image.tag }}"
           imagePullPolicy: {{ .Values.agentSidecar.image.pullPolicy }}
           command:
-            - /proxysql-agent
+            - /app/proxysql-agent
             - --start_delay=5
-            - --run_mode=core
+            - --run_mode=satellite
           volumeMounts:
           - name: proxysql-var
             mountPath: "/var/lib/proxysql"
