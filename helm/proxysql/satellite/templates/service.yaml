@@ -7,6 +7,10 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
+    - port: 6032
+      targetPort: 6032
+      protocol: TCP
+      name: proxysql-admin
     - port: {{ .Values.service.port }}
       targetPort: 6033
       protocol: TCP
