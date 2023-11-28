@@ -4,11 +4,11 @@ image:
   # pointing to the local (on my laptop) proxysql image tagged latest
   repository: proxysql
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Never
   ## to use the official images
   # repository: proxysql/proxysql
   # tag: 2.5.5-debian
-  # pullPolicy: IfNotPresent
+  # pullPolicy: Never
 
 # proxysql-agent sidecar config
 # FIXME: this is a separate repo
@@ -16,9 +16,9 @@ agentSidecar:
   enabled: true
   image:
     # points to the local (on my laptop) proxysql-agent image tagged latest
-    repository: proxysql-agent
+    repository: ghcr.io/persona-id/proxysql-agent
     tag: latest
-    pullPolicy: IfNotPresent
+    pullPolicy: Never
 
 imagePullSecrets: []
 

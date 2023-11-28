@@ -41,9 +41,16 @@ spec:
             - /app/proxysql-agent
             - --start_delay=5
             - --run_mode=satellite
+          lifecycle:
+            preStop:
+              exec:
+                # sleep for 5 minutes, so that the sidecar remains up long enough to kill proxysql
+                # itself. Once proxysql is shutdown, this container issues an os.Exit(0) so it will
+                # likely never actually be 5 minutes.
+                command: ["/bin/sh", "-c", "echo 'sleeping for up to 300s while proxysql gracefully shuts down'; sleep 300"]
           volumeMounts:
-          - name: proxysql-var
-            mountPath: "/var/lib/proxysql"
+            - mountPath: /var/lib/proxysql
+              name: proxysql-var
         {{- end }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -63,25 +70,34 @@ spec:
               mountPath: /etc/proxysql.cnf
               subPath: proxysql.cnf
             - name: {{ .Release.Name }}-config
-              mountPath: /root/.my.cnf
+              mountPath: /etc/mysql/conf.d/proxysql-admin.cnf
               subPath: my.cnf
             - name: {{ .Release.Name }}-passwords
               mountPath: "/var/lib/proxysql/secrets"
               readOnly: true
+          # this appears to not work in orbstack k8s; need to test in staging
+          lifecycle:
+            preStop:
+              httpGet:
+                path: /shutdown
+                port: 8080
           startupProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
-            initialDelaySeconds: 10
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: 8080
+            initialDelaySeconds: 5
             periodSeconds: 5
           livenessProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
-            initialDelaySeconds: 5
-            periodSeconds: 15
-          readinessProbe:
-            exec:
-              command: ["/usr/bin/ruby", "/usr/local/bin/health-probe.rb"]
-            initialDelaySeconds: 5
+            httpGet:
+              path: /healthz/live
+              port: 8080
+            initialDelaySeconds: 10
             periodSeconds: 15
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

@@ -15,7 +15,8 @@ RUN apt-get update && apt-get -u upgrade -y && apt-get install -y --no-install-r
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* /var/cache/* /var/log/*
 
-COPY --chmod=700 --chown=proxysql:proxysql bin/*.rb /usr/local/bin/
+USER proxysql
+WORKDIR /tmp
 
 # BUG: Reset entrypoint to override base image.
 ENTRYPOINT []
