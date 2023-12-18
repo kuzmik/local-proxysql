@@ -41,6 +41,7 @@ spec:
             - /app/proxysql-agent
             - --start_delay=5
             - --run_mode=satellite
+            - --log.format=text
           lifecycle:
             preStop:
               exec:
@@ -48,6 +49,38 @@ spec:
                 # itself. Once proxysql is shutdown, this container issues an os.Exit(0) so it will
                 # likely never actually be 5 minutes.
                 command: ["/bin/sh", "-c", "echo 'sleeping for up to 300s while proxysql gracefully shuts down'; sleep 300"]
+          startupProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            limits:
+              cpu: 250m
+              memory: 250Mi
+            requests:
+              cpu: 250m
+              memory: 250Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsNonRoot: true
+            runAsUser: 1000
           volumeMounts:
             - mountPath: /var/lib/proxysql
               name: proxysql-var
@@ -56,10 +89,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: proxysql
+            - name: proxysql-mysql
               containerPort: 6033
               protocol: TCP
-            - name: admin
+            - name: proxysql-admin
               containerPort: 6032
               protocol: TCP
           volumeMounts:
@@ -99,6 +132,13 @@ spec:
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 15
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsNonRoot: true
+            runAsUser: 999
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
     {{- with .Values.nodeSelector }}

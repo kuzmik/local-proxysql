@@ -13,7 +13,7 @@ DIR=$(dirname -- "${BASH_SOURCE[0]}")
 
 # Build the customized (sorta) ProxySQL docker image
 pushd "$DIR/../helm/proxysql"
-  docker build -t proxysql .
+  docker build -t proxysql . -t proxysql:latest -t proxysql:1.0.0
 popd
 
 # Create the mysql infra

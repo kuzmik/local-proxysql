@@ -44,6 +44,40 @@ spec:
             - /app/proxysql-agent
             - --start_delay=5
             - --run_mode=core
+            - --log.format=text
+          startupProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 2
+          readinessProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz/started
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          resources:
+            limits:
+              cpu: 250m
+              memory: 250Mi
+            requests:
+              cpu: 250m
+              memory: 250Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsNonRoot: true
+            runAsUser: 1000
+          volumeMounts:
           volumeMounts:
             - mountPath: /var/lib/proxysql
               name: proxysql-var
@@ -52,7 +86,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: admin
+            - name: proxysql-admin
               containerPort: 6032
               protocol: TCP
           volumeMounts:
@@ -88,7 +122,13 @@ spec:
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5
-
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            runAsNonRoot: true
+            runAsUser: 999
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
     {{- with .Values.nodeSelector }}

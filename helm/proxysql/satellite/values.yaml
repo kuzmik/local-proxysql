@@ -3,7 +3,7 @@ replicaCount: 3
 image:
   # pointing to the local (on my laptop) proxysql image tagged latest
   repository: proxysql
-  tag: latest
+  tag: 1.0.0
   pullPolicy: Never
   ## to use the official images
   # repository: proxysql/proxysql
@@ -16,8 +16,8 @@ agentSidecar:
   enabled: true
   image:
     # points to the local (on my laptop) proxysql-agent image tagged latest
-    repository: ghcr.io/persona-id/proxysql-agent
-    tag: latest
+    repository: persona-id/proxysql-agent
+    tag: 1.0.1
     pullPolicy: Never
 
 imagePullSecrets: []
@@ -30,7 +30,13 @@ service:
   type: ClusterIP
   port: 6033
 
-resources: {}
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 500Mi
 
 nodeSelector: {}
 

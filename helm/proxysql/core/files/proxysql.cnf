@@ -143,6 +143,18 @@ mysql_users:
   },
 )
 
+# default proxysql-core service, that fronts the proxysql-core stateful set; satellites connect to this
+# on boot (or on reload by the scheduled script) to fetch configuration from the pods.
+proxysql_servers =
+(
+    {
+        hostname  = "proxysql-core"
+        port      = 6032
+        weight    = 0
+        comment   = "default servers from config"
+    }
+)
+
 # defines MySQL Query Rules
 mysql_query_rules:
 (

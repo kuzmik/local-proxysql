@@ -8,13 +8,13 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: 6032
-      targetPort: 6032
+      targetPort: proxysql-admin
       protocol: TCP
       name: proxysql-admin
     - port: {{ .Values.service.port }}
-      targetPort: 6033
+      targetPort: proxysql-mysql
       protocol: TCP
-      name: proxysql
+      name: proxysql-mysql
   selector:
     app.kubernetes.io/name: {{ include "proxysql.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

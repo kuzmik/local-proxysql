@@ -12,14 +12,7 @@ This assumes you have a k8s cluster on hand; we're installing some helm charts i
 
 ## ProxySQL Agent
 
-I've gotten rid of most of the ruby and am moving to using the [proxysql-agent](https://github.com/persona-id/proxysql-agent) sidecar. To run this repo on any version other than the [v1.0 tag](https://github.com/kuzmik/local-proxysql/tree/v1.0), you'll need to clone the ProxySQL agent repo and build the docker image locally. I didn't really want to mess with git submodules for this, and want to release the agent as a standalone product.
-
-At some point we'll get make ghcr.io docker image public so that these steps aren't necessary, but until then it's easy enough to make the image locally.
-
-Easy two step process to build the local docker image for proxysql-agent:
-
-1. `git clone git@github.com:persona-id/proxysql-agent.git`
-1. `cd proxysql-agent && make docker`
+We've gotten rid of the ruby tooling and we've moved to using the [proxysql-agent](https://github.com/persona-id/proxysql-agent) sidecar. The helm charts now pull the image from the ghcr.io registry, so no extra steps are needed here.
 
 ## TL;DR LET ME INNNNN
 
