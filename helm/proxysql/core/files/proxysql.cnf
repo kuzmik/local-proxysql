@@ -53,11 +53,11 @@ mysql_variables=
   # or in our case, on a just one server basis.
   have_ssl                                    = true
 
-  query_digests_keep_comment                = true
-  query_digests_lowercase                   = true
-  query_digests_no_digits                   = false
-  query_digests_normalize_digest_text       = false
-  query_digests_replace_null                = true
+  query_digests_keep_comment                  = true
+  query_digests_lowercase                     = true
+  query_digests_no_digits                     = false
+  query_digests_normalize_digest_text         = false
+  query_digests_replace_null                  = true
 
   monitor_username                            = "root"
   monitor_password                            = "rootpw"
@@ -86,6 +86,13 @@ mysql_servers =
     compression       = 1
   },
   {
+    address           = "mysql-us1-tertiary.mysql.svc.cluster.local"
+    port              = 3306
+    hostgroup         = 12
+    max_connections   = 250
+    compression       = 1
+  },
+  {
     address           = "mysql-us2-primary.mysql.svc.cluster.local"
     port              = 3306
     hostgroup         = 20
@@ -96,6 +103,13 @@ mysql_servers =
     address           = "mysql-us2-secondary.mysql.svc.cluster.local"
     port              = 3306
     hostgroup         = 21
+    max_connections   = 250
+    compression       = 1
+  },
+  {
+    address           = "mysql-us2-tertiary.mysql.svc.cluster.local"
+    port              = 3306
+    hostgroup         = 22
     max_connections   = 250
     compression       = 1
   },
@@ -115,10 +129,19 @@ mysql_users:
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us1-ro"
-    password                = "persona-web-us1-ro"
+    username                = "persona-web-us1-ro1"
+    password                = "persona-web-us1-ro1"
     default_schema          = "persona-web-us1"
     default_hostgroup       = 11
+    active                  = 1
+    transaction_persistent  = 1
+    max_connections         = 2500
+  },
+  {
+    username                = "persona-web-us1-ro2"
+    password                = "persona-web-us1-ro2"
+    default_schema          = "persona-web-us1"
+    default_hostgroup       = 12
     active                  = 1
     transaction_persistent  = 1
     max_connections         = 2500
@@ -133,10 +156,19 @@ mysql_users:
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us2-ro"
-    password                = "persona-web-us2-ro"
+    username                = "persona-web-us2-ro1"
+    password                = "persona-web-us2-ro1"
     default_schema          = "persona-web-us2"
     default_hostgroup       = 21
+    active                  = 1
+    transaction_persistent  = 1
+    max_connections         = 2500
+  },
+  {
+    username                = "persona-web-us2-ro2"
+    password                = "persona-web-us2-ro2"
+    default_schema          = "persona-web-us2"
+    default_hostgroup       = 22
     active                  = 1
     transaction_persistent  = 1
     max_connections         = 2500

@@ -1,6 +1,9 @@
 # Create the RO specific user
-CREATE USER 'persona-web-us1-ro'@'%' IDENTIFIED BY 'persona-web-us1-ro';
-GRANT ALL PRIVILEGES ON `persona-web-us1`.* TO 'persona-web-us1-ro'@'%';
+CREATE USER 'persona-web-us1-ro1'@'%' IDENTIFIED BY 'persona-web-us1-ro1';
+GRANT ALL PRIVILEGES ON `persona-web-us1`.* TO 'persona-web-us1-ro1'@'%';
+
+CREATE USER 'persona-web-us1-ro2'@'%' IDENTIFIED BY 'persona-web-us1-ro2';
+GRANT ALL PRIVILEGES ON `persona-web-us1`.* TO 'persona-web-us1-ro2'@'%';
 
 # Create a users table and some test users, just so we can visually see that the shards have different data.
 CREATE TABLE users (

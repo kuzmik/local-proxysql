@@ -7,78 +7,78 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
-  name: {{ include "mysql.secondary.fullname" . }}
+  name: {{ include "mysql.tertiary.fullname" . }}
   namespace: {{ include "common.names.namespace" . | quote }}
   labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
-    app.kubernetes.io/component: secondary
+    app.kubernetes.io/component: tertiary
   {{- if .Values.commonAnnotations }}
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 spec:
-  replicas: {{ .Values.secondary.replicaCount }}
-  podManagementPolicy: {{ .Values.secondary.podManagementPolicy | quote }}
-  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.secondary.podLabels .Values.commonLabels ) "context" . ) }}
+  replicas: {{ .Values.tertiary.replicaCount }}
+  podManagementPolicy: {{ .Values.tertiary.podManagementPolicy | quote }}
+  {{- $podLabels := include "common.tplvalues.merge" ( dict "values" ( list .Values.tertiary.podLabels .Values.commonLabels ) "context" . ) }}
   selector:
     matchLabels: {{- include "common.labels.matchLabels" ( dict "customLabels" $podLabels "context" $ ) | nindent 6 }}
-      app.kubernetes.io/component: secondary
-  serviceName: {{ include "mysql.secondary.fullname" . }}
-  {{- if .Values.secondary.updateStrategy }}
-  updateStrategy: {{- toYaml .Values.secondary.updateStrategy | nindent 4 }}
+      app.kubernetes.io/component: tertiary
+  serviceName: {{ include "mysql.tertiary.fullname" . }}
+  {{- if .Values.tertiary.updateStrategy }}
+  updateStrategy: {{- toYaml .Values.tertiary.updateStrategy | nindent 4 }}
   {{- end }}
   template:
     metadata:
       annotations:
-        {{- if (include "mysql.secondary.createConfigmap" .) }}
-        checksum/configuration: {{ include (print $.Template.BasePath "/secondary/configmap.yaml") . | sha256sum }}
+        {{- if (include "mysql.tertiary.createConfigmap" .) }}
+        checksum/configuration: {{ include (print $.Template.BasePath "/tertiary/configmap.yaml") . | sha256sum }}
         {{- end }}
-        {{- if .Values.secondary.podAnnotations }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.secondary.podAnnotations "context" $) | nindent 8 }}
+        {{- if .Values.tertiary.podAnnotations }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.podAnnotations "context" $) | nindent 8 }}
         {{- end }}
       labels: {{- include "common.labels.standard" ( dict "customLabels" $podLabels "context" $ ) | nindent 8 }}
-        app.kubernetes.io/component: secondary
+        app.kubernetes.io/component: tertiary
     spec:
-      {{- if .Values.secondary.extraPodSpec }}
-      {{- include "common.tplvalues.render" (dict "value" .Values.secondary.extraPodSpec "context" $) | nindent 6 }}
+      {{- if .Values.tertiary.extraPodSpec }}
+      {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.extraPodSpec "context" $) | nindent 6 }}
       {{- end }}
       serviceAccountName: {{ include "mysql.serviceAccountName" . }}
       {{- include "mysql.imagePullSecrets" . | nindent 6 }}
-      {{- if .Values.secondary.hostAliases }}
-      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.hostAliases "context" $) | nindent 8 }}
+      {{- if .Values.tertiary.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.hostAliases "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.secondary.affinity }}
-      affinity: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.affinity "context" $) | nindent 8 }}
+      {{- if .Values.tertiary.affinity }}
+      affinity: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.affinity "context" $) | nindent 8 }}
       {{- else }}
       affinity:
-        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.secondary.podAffinityPreset "customLabels" $podLabels "context" $) | nindent 10 }}
-        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.secondary.podAntiAffinityPreset "customLabels" $podLabels "context" $) | nindent 10 }}
-        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.secondary.nodeAffinityPreset.type "key" .Values.secondary.nodeAffinityPreset.key "values" .Values.secondary.nodeAffinityPreset.values) | nindent 10 }}
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.tertiary.podAffinityPreset "customLabels" $podLabels "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.tertiary.podAntiAffinityPreset "customLabels" $podLabels "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.tertiary.nodeAffinityPreset.type "key" .Values.tertiary.nodeAffinityPreset.key "values" .Values.tertiary.nodeAffinityPreset.values) | nindent 10 }}
       {{- end }}
-      {{- if .Values.secondary.nodeSelector }}
-      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.nodeSelector "context" $) | nindent 8 }}
+      {{- if .Values.tertiary.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.nodeSelector "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.secondary.tolerations }}
-      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.tolerations "context" $) | nindent 8 }}
+      {{- if .Values.tertiary.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.tolerations "context" $) | nindent 8 }}
       {{- end }}
-      {{- if .Values.secondary.priorityClassName }}
-      priorityClassName: {{ .Values.secondary.priorityClassName | quote }}
+      {{- if .Values.tertiary.priorityClassName }}
+      priorityClassName: {{ .Values.tertiary.priorityClassName | quote }}
       {{- end }}
-      {{- if .Values.secondary.runtimeClassName }}
-      runtimeClassName: {{ .Values.secondary.runtimeClassName | quote }}
+      {{- if .Values.tertiary.runtimeClassName }}
+      runtimeClassName: {{ .Values.tertiary.runtimeClassName | quote }}
       {{- end }}
-      {{- if .Values.secondary.schedulerName }}
-      schedulerName: {{ .Values.secondary.schedulerName | quote }}
+      {{- if .Values.tertiary.schedulerName }}
+      schedulerName: {{ .Values.tertiary.schedulerName | quote }}
       {{- end }}
-      {{- if .Values.secondary.topologySpreadConstraints }}
-      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.topologySpreadConstraints "context" .) | nindent 8 }}
+      {{- if .Values.tertiary.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.topologySpreadConstraints "context" .) | nindent 8 }}
       {{- end }}
-      {{- if .Values.secondary.podSecurityContext.enabled }}
-      securityContext: {{- omit .Values.secondary.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- if .Values.tertiary.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.tertiary.podSecurityContext "enabled" | toYaml | nindent 8 }}
       {{- end }}
-      {{- if .Values.secondary.terminationGracePeriodSeconds }}
-      terminationGracePeriodSeconds: {{ .Values.secondary.terminationGracePeriodSeconds }}
+      {{- if .Values.tertiary.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.tertiary.terminationGracePeriodSeconds }}
       {{- end }}
       initContainers:
-        {{- if and .Values.secondary.podSecurityContext.enabled .Values.volumePermissions.enabled .Values.secondary.persistence.enabled }}
+        {{- if and .Values.tertiary.podSecurityContext.enabled .Values.volumePermissions.enabled .Values.tertiary.persistence.enabled }}
         - name: volume-permissions
           image: {{ include "mysql.volumePermissions.image" . }}
           imagePullPolicy: {{ .Values.volumePermissions.image.pullPolicy | quote }}
@@ -87,8 +87,8 @@ spec:
             - -ec
             - |
               mkdir -p "/bitnami/mysql"
-              chown "{{ .Values.secondary.containerSecurityContext.runAsUser }}:{{ .Values.secondary.podSecurityContext.fsGroup }}" "/bitnami/mysql"
-              find "/bitnami/mysql" -mindepth 1 -maxdepth 1 -not -name ".snapshot" -not -name "lost+found" | xargs -r chown -R "{{ .Values.secondary.containerSecurityContext.runAsUser }}:{{ .Values.secondary.podSecurityContext.fsGroup }}"
+              chown "{{ .Values.tertiary.containerSecurityContext.runAsUser }}:{{ .Values.tertiary.podSecurityContext.fsGroup }}" "/bitnami/mysql"
+              find "/bitnami/mysql" -mindepth 1 -maxdepth 1 -not -name ".snapshot" -not -name "lost+found" | xargs -r chown -R "{{ .Values.tertiary.containerSecurityContext.runAsUser }}:{{ .Values.tertiary.podSecurityContext.fsGroup }}"
           securityContext:
             runAsUser: 0
           {{- if .Values.volumePermissions.resources }}
@@ -97,32 +97,32 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /bitnami/mysql
-              {{- if .Values.secondary.persistence.subPath }}
-              subPath: {{ .Values.secondary.persistence.subPath }}
+              {{- if .Values.tertiary.persistence.subPath }}
+              subPath: {{ .Values.tertiary.persistence.subPath }}
               {{- end }}
         {{- end }}
-        {{- if .Values.secondary.initContainers }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.secondary.initContainers "context" $) | nindent 8 }}
+        {{- if .Values.tertiary.initContainers }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.initContainers "context" $) | nindent 8 }}
         {{- end }}
       containers:
         - name: mysql
           image: {{ include "mysql.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-          {{- if .Values.secondary.containerSecurityContext.enabled }}
-          securityContext: {{- omit .Values.secondary.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- if .Values.tertiary.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.tertiary.containerSecurityContext "enabled" | toYaml | nindent 12 }}
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
-          {{- else if .Values.secondary.command }}
-          command: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.command "context" $) | nindent 12 }}
+          {{- else if .Values.tertiary.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.command "context" $) | nindent 12 }}
           {{- end }}
           {{- if .Values.diagnosticMode.enabled }}
           args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
-          {{- else if .Values.secondary.args }}
-          args: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.args "context" $) | nindent 12 }}
+          {{- else if .Values.tertiary.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.args "context" $) | nindent 12 }}
           {{- end }}
-          {{- if .Values.secondary.lifecycleHooks }}
-          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.lifecycleHooks "context" $) | nindent 12 }}
+          {{- if .Values.tertiary.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.lifecycleHooks "context" $) | nindent 12 }}
           {{- end }}
           env:
             - name: BITNAMI_DEBUG
@@ -154,33 +154,33 @@ spec:
                   name: {{ template "mysql.secretName" . }}
                   key: mysql-replication-password
             {{- end }}
-            {{- if .Values.secondary.extraFlags }}
+            {{- if .Values.tertiary.extraFlags }}
             - name: MYSQL_EXTRA_FLAGS
-              value: "{{ .Values.secondary.extraFlags }}"
+              value: "{{ .Values.tertiary.extraFlags }}"
             {{- end }}
-            {{- if .Values.secondary.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.secondary.extraEnvVars "context" $) | nindent 12 }}
+            {{- if .Values.tertiary.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
           envFrom:
-            {{- if .Values.secondary.extraEnvVarsCM }}
+            {{- if .Values.tertiary.extraEnvVarsCM }}
             - configMapRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.secondary.extraEnvVarsCM "context" $) }}
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.tertiary.extraEnvVarsCM "context" $) }}
             {{- end }}
-            {{- if .Values.secondary.extraEnvVarsSecret }}
+            {{- if .Values.tertiary.extraEnvVarsSecret }}
             - secretRef:
-                name: {{ include "common.tplvalues.render" (dict "value" .Values.secondary.extraEnvVarsSecret "context" $) }}
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.tertiary.extraEnvVarsSecret "context" $) }}
             {{- end }}
           ports:
             - name: mysql
               containerPort: 3306
-            {{- if .Values.secondary.extraPorts }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.secondary.extraPorts "context" $) | nindent 12 }}
+            {{- if .Values.tertiary.extraPorts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.extraPorts "context" $) | nindent 12 }}
             {{- end }}
           {{- if not .Values.diagnosticMode.enabled }}
-          {{- if .Values.secondary.customLivenessProbe }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.customLivenessProbe "context" $) | nindent 12 }}
-          {{- else if .Values.secondary.livenessProbe.enabled }}
-          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.secondary.livenessProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.tertiary.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.customLivenessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.tertiary.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.tertiary.livenessProbe "enabled") "context" $) | nindent 12 }}
             exec:
               command:
                 - /bin/bash
@@ -192,10 +192,10 @@ spec:
                   fi
                   mysqladmin status -uroot -p"${password_aux}"
           {{- end }}
-          {{- if .Values.secondary.customReadinessProbe }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.customReadinessProbe "context" $) | nindent 12 }}
-          {{- else if .Values.secondary.readinessProbe.enabled }}
-          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.secondary.readinessProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.tertiary.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.customReadinessProbe "context" $) | nindent 12 }}
+          {{- else if .Values.tertiary.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.tertiary.readinessProbe "enabled") "context" $) | nindent 12 }}
             exec:
               command:
                 - /bin/bash
@@ -207,10 +207,10 @@ spec:
                   fi
                   mysqladmin status -uroot -p"${password_aux}"
           {{- end }}
-          {{- if .Values.secondary.customStartupProbe }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.customStartupProbe "context" $) | nindent 12 }}
-          {{- else if .Values.secondary.startupProbe.enabled }}
-          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.secondary.startupProbe "enabled") "context" $) | nindent 12 }}
+          {{- if .Values.tertiary.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.customStartupProbe "context" $) | nindent 12 }}
+          {{- else if .Values.tertiary.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.tertiary.startupProbe "enabled") "context" $) | nindent 12 }}
             exec:
               command:
                 - /bin/bash
@@ -223,14 +223,14 @@ spec:
                   mysqladmin status -uroot -p"${password_aux}"
           {{- end }}
           {{- end }}
-          {{- if .Values.secondary.resources }}
-          resources: {{ toYaml .Values.secondary.resources | nindent 12 }}
+          {{- if .Values.tertiary.resources }}
+          resources: {{ toYaml .Values.tertiary.resources | nindent 12 }}
           {{- end }}
           volumeMounts:
             - name: data
               mountPath: /bitnami/mysql
-              {{- if .Values.secondary.persistence.subPath }}
-              subPath: {{ .Values.secondary.persistence.subPath }}
+              {{- if .Values.tertiary.persistence.subPath }}
+              subPath: {{ .Values.tertiary.persistence.subPath }}
               {{- end }}
             {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
             - name: custom-init-scripts
@@ -240,7 +240,7 @@ spec:
             - name: custom-start-scripts
               mountPath: /docker-entrypoint-startdb.d
             {{- end }}
-            {{- if or .Values.secondary.configuration .Values.secondary.existingConfigmap }}
+            {{- if or .Values.tertiary.configuration .Values.tertiary.existingConfigmap }}
             - name: config
               mountPath: /opt/bitnami/mysql/conf/my.cnf
               subPath: my.cnf
@@ -249,8 +249,8 @@ spec:
             - name: mysql-credentials
               mountPath: /opt/bitnami/mysql/secrets/
             {{- end }}
-            {{- if .Values.secondary.extraVolumeMounts }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.secondary.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- if .Values.tertiary.extraVolumeMounts }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
         {{- if .Values.metrics.enabled }}
         - name: metrics
@@ -310,8 +310,8 @@ spec:
               mountPath: /opt/bitnami/mysqld-exporter/secrets/
           {{- end }}
         {{- end }}
-        {{- if .Values.secondary.sidecars }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.secondary.sidecars "context" $) | nindent 8 }}
+        {{- if .Values.tertiary.sidecars }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.sidecars "context" $) | nindent 8 }}
         {{- end }}
       volumes:
         {{- if or .Values.initdbScriptsConfigMap .Values.initdbScripts }}
@@ -324,10 +324,10 @@ spec:
           configMap:
             name: {{ include "mysql.startdbScriptsCM" . }}
         {{- end }}
-        {{- if or .Values.secondary.configuration .Values.secondary.existingConfigmap }}
+        {{- if or .Values.tertiary.configuration .Values.tertiary.existingConfigmap }}
         - name: config
           configMap:
-            name: {{ include "mysql.secondary.configmapName" . }}
+            name: {{ include "mysql.tertiary.configmapName" . }}
         {{- end }}
         {{- if and .Values.auth.usePasswordFiles (not .Values.auth.customPasswordFiles) }}
         - name: mysql-credentials
@@ -339,42 +339,42 @@ spec:
               - key: mysql-replication-password
                 path: mysql-replication-password
         {{- end }}
-        {{- if .Values.secondary.extraVolumes }}
-        {{- include "common.tplvalues.render" (dict "value" .Values.secondary.extraVolumes "context" $) | nindent 8 }}
+        {{- if .Values.tertiary.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
-  {{- if and .Values.secondary.persistence.enabled .Values.secondary.persistence.existingClaim }}
+  {{- if and .Values.tertiary.persistence.enabled .Values.tertiary.persistence.existingClaim }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ tpl .Values.secondary.persistence.existingClaim . }}
-  {{- else if not .Values.secondary.persistence.enabled }}
+            claimName: {{ tpl .Values.tertiary.persistence.existingClaim . }}
+  {{- else if not .Values.tertiary.persistence.enabled }}
         - name: data
           emptyDir: {}
   {{- else }}
-  {{- if .Values.secondary.persistentVolumeClaimRetentionPolicy.enabled }}
+  {{- if .Values.tertiary.persistentVolumeClaimRetentionPolicy.enabled }}
   persistentVolumeClaimRetentionPolicy:
-    whenDeleted: {{ .Values.secondary.persistentVolumeClaimRetentionPolicy.whenDeleted }}
-    whenScaled: {{ .Values.secondary.persistentVolumeClaimRetentionPolicy.whenScaled }}
+    whenDeleted: {{ .Values.tertiary.persistentVolumeClaimRetentionPolicy.whenDeleted }}
+    whenScaled: {{ .Values.tertiary.persistentVolumeClaimRetentionPolicy.whenScaled }}
   {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: data
         labels: {{- include "common.labels.matchLabels" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 10 }}
-          app.kubernetes.io/component: secondary
-        {{- if or .Values.secondary.persistence.annotations .Values.commonAnnotations }}
-        {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list  .Values.secondary.persistence.annotations .Values.commonAnnotations ) "context" . ) }}
+          app.kubernetes.io/component: tertiary
+        {{- if or .Values.tertiary.persistence.annotations .Values.commonAnnotations }}
+        {{- $annotations := include "common.tplvalues.merge" ( dict "values" ( list  .Values.tertiary.persistence.annotations .Values.commonAnnotations ) "context" . ) }}
         annotations: {{- include "common.tplvalues.render" ( dict "value" $annotations "context" $) | nindent 10 }}
         {{- end }}
       spec:
         accessModes:
-          {{- range .Values.secondary.persistence.accessModes }}
+          {{- range .Values.tertiary.persistence.accessModes }}
           - {{ . | quote }}
           {{- end }}
         resources:
           requests:
-            storage: {{ .Values.secondary.persistence.size | quote }}
-        {{- include "common.storage.class" (dict "persistence" .Values.secondary.persistence "global" .Values.global) | nindent 8 }}
-        {{- if .Values.secondary.persistence.selector }}
-        selector: {{- include "common.tplvalues.render" (dict "value" .Values.secondary.persistence.selector "context" $) | nindent 10 }}
+            storage: {{ .Values.tertiary.persistence.size | quote }}
+        {{- include "common.storage.class" (dict "persistence" .Values.tertiary.persistence "global" .Values.global) | nindent 8 }}
+        {{- if .Values.tertiary.persistence.selector }}
+        selector: {{- include "common.tplvalues.render" (dict "value" .Values.tertiary.persistence.selector "context" $) | nindent 10 }}
         {{- end -}}
   {{- end }}
 {{- end }}

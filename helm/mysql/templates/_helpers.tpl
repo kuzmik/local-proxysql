@@ -17,6 +17,10 @@ SPDX-License-Identifier: APACHE-2.0
 {{- printf "%s-%s" (include "common.names.fullname" .) .Values.secondary.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{- define "mysql.tertiary.fullname" -}}
+{{- printf "%s-%s" (include "common.names.fullname" .) .Values.tertiary.name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{/*
 Return the proper MySQL image name
 */}}
@@ -113,6 +117,18 @@ Return the configmap with the MySQL Primary configuration
 {{- end -}}
 
 {{/*
+Return the configmap with the MySQL Primary configuration
+*/}}
+{{- define "mysql.tertiary.configmapName" -}}
+{{- if .Values.tertiary.existingConfigmap -}}
+    {{- printf "%s" (tpl .Values.tertiary.existingConfigmap $) -}}
+{{- else -}}
+    {{- printf "%s" (include "mysql.tertiary.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Return true if a configmap object should be created for MySQL Secondary
 */}}
 {{- define "mysql.secondary.createConfigmap" -}}
@@ -121,6 +137,17 @@ Return true if a configmap object should be created for MySQL Secondary
 {{- else -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Return true if a configmap object should be created for MySQL tertiary
+*/}}
+{{- define "mysql.tertiary.createConfigmap" -}}
+{{- if and (eq .Values.architecture "replication") .Values.tertiary.configuration (not .Values.tertiary.existingConfigmap) }}
+    {{- true -}}
+{{- else -}}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 Return the secret with MySQL credentials
