@@ -8,7 +8,7 @@ DIR=$(dirname -- "${BASH_SOURCE[0]}")
 proxysql_instance=$(kubectl get service proxysql-satellite -n proxysql --output jsonpath='{.spec.clusterIP}')
 
 echo ""
-echo "Connecting to MySQL - US1 Primary"
+echo "==> Connecting to the us1 primary database (served by proxysql)"
 echo ""
 
 mysql --defaults-extra-file="$DIR/.lib/us1-client.cfg" -h"$proxysql_instance" -P6033 --comments persona-web-us1

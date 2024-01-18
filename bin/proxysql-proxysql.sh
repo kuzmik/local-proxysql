@@ -6,6 +6,8 @@ set -eou pipefail
 mysql_info=$(kubectl get service -n proxysql proxysql-satellite --output=json | jq -r '.spec.clusterIP')
 mysql_host=$(echo "$mysql_info" | awk 'NR==1')
 
+echo ""
 echo "==> Connecting to the proxysql coordination database (served by proxysql)"
+echo ""
 
 mysql -h"$mysql_host" -P6033 -uproxysql -pproxysql
