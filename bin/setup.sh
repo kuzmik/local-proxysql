@@ -13,7 +13,7 @@ DIR=$(dirname -- "${BASH_SOURCE[0]}")
 
 # Build the customized (sorta) ProxySQL docker image
 pushd "$DIR/../helm/proxysql"
-  docker build -t proxysql . -t proxysql:latest -t proxysql:1.0.0
+  docker build -t persona-id/proxysql . -t persona-id/proxysql:latest -t persona-id/proxysql:1.0.0
 popd
 
 # Create the mysql infra
@@ -48,6 +48,14 @@ helm install mysql-us2 -n mysql "$DIR/../helm/mysql" \
   --set auth.username="persona-web-us2" \
   --set auth.password="persona-web-us2" \
   --set initdbScriptsConfigMap="us2-initdb"
+
+helm install proxysql -n mysql "$DIR/../helm/mysql" \
+  --set nameOverride="proxysql" \
+  --set architecture="standalone" \
+  --set auth.rootPassword="rootpw" \
+  --set auth.database="proxysql" \
+  --set auth.username="proxysql" \
+  --set auth.password="proxysql"
 
 # End MySQL
 

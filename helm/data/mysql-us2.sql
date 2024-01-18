@@ -1,6 +1,7 @@
 # Create the RO specific user
 CREATE USER 'persona-web-us2-ro1'@'%' IDENTIFIED BY 'persona-web-us2-ro1';
 GRANT ALL PRIVILEGES ON `persona-web-us2`.* TO 'persona-web-us2-ro1'@'%';
+GRANT FILE ON *.* TO 'persona-web-us2'@'%';
 
 CREATE USER 'persona-web-us2-ro2'@'%' IDENTIFIED BY 'persona-web-us2-ro2';
 GRANT ALL PRIVILEGES ON `persona-web-us2`.* TO 'persona-web-us2-ro2'@'%';

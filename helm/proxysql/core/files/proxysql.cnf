@@ -72,6 +72,13 @@ mysql_variables=
 mysql_servers =
 (
   {
+    address           = "proxysql.mysql.svc.cluster.local"
+    port              = 3306
+    hostgroup         = 1
+    max_connections   = 250
+    compression       = 1
+  },
+  {
     address           = "mysql-us1-primary.mysql.svc.cluster.local"
     port              = 3306
     hostgroup         = 10
@@ -119,6 +126,15 @@ mysql_servers =
 # defines all the MySQL users
 mysql_users:
 (
+  {
+    username                = "proxysql"
+    password                = "proxysql"
+    default_schema          = "proxysql"
+    default_hostgroup       = 1
+    active                  = 1
+    transaction_persistent  = 1
+    max_connections         = 2500
+  },
   {
     username                = "persona-web-us1"
     password                = "persona-web-us1"
