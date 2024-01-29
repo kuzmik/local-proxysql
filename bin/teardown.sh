@@ -14,6 +14,7 @@ helm uninstall -n proxysql --ignore-not-found proxysql-satellite
 
 helm uninstall -n mysql --ignore-not-found mysql-us1
 helm uninstall -n mysql --ignore-not-found mysql-us2
+helm uninstall -n mysql --ignore-not-found proxysql
 
 # Probably all we _really_ need to do here is delete the namespaces, but then helm might get confused
 kubectl delete ns --ignore-not-found proxysql
