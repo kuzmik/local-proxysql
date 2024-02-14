@@ -198,8 +198,8 @@ mysql_users:
   },
 )
 
-# default proxysql-core service, that fronts the proxysql-core stateful set; satellites connect to this
-# on boot (or on reload by the scheduled script) to fetch configuration from the pods.
+# default proxysql-core service which fronts the proxysql-core stateful set; satellites connect to this
+# on boot (or on reload, if triggered by the agent) to fetch configuration from the pods
 proxysql_servers =
 (
     {

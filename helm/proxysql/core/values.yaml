@@ -17,7 +17,7 @@ agentSidecar:
   image:
     # points to the local (on my laptop) persona-id/proxysql-agent
     repository: persona-id/proxysql-agent
-    tag: 1.1.0
+    tag: 1.1.1
     pullPolicy: Never
 
 imagePullSecrets: []

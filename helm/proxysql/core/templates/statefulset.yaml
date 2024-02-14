@@ -45,6 +45,7 @@ spec:
             - --start_delay=5
             - --run_mode=core
             - --log.format=text
+            - --log.level=DEBUG
           startupProbe:
             httpGet:
               path: /healthz/started
