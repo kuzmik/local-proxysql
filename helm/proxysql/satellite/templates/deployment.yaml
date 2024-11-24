@@ -114,6 +114,7 @@ spec:
               httpGet:
                 path: /shutdown
                 port: 8080
+          {{- if .Values.agentSidecar.enabled }}
           startupProbe:
             httpGet:
               path: /healthz/started
@@ -132,6 +133,7 @@ spec:
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 15
+          {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

@@ -103,6 +103,7 @@ spec:
             - name: {{ .Release.Name }}-passwords
               mountPath: "/var/lib/proxysql/secrets"
               readOnly: true
+          {{- if .Values.agentSidecar.enabled }}
           # all three probes are just pings for core pods, since we don't want to go unhealthy
           # if a backend vanishes for core pods.
           startupProbe:
@@ -123,6 +124,7 @@ spec:
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 5
+          {{- end }}
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

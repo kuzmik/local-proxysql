@@ -88,7 +88,7 @@ mysql_servers =
     use_ssl           = 1
   },
   {
-    address           = "mysql-us1-secondary.mysql.svc.cluster.local"
+    address           = "mysql-us1-replica0.mysql.svc.cluster.local"
     port              = 3306
     hostgroup         = 11
     max_connections   = 250
@@ -96,7 +96,7 @@ mysql_servers =
     use_ssl           = 1
   },
   {
-    address           = "mysql-us1-tertiary.mysql.svc.cluster.local"
+    address           = "mysql-us1-replica1.mysql.svc.cluster.local"
     port              = 3306
     hostgroup         = 12
     max_connections   = 250
@@ -112,7 +112,7 @@ mysql_servers =
     use_ssl           = 1
   },
   {
-    address           = "mysql-us2-secondary.mysql.svc.cluster.local"
+    address           = "mysql-us2-replica0.mysql.svc.cluster.local"
     port              = 3306
     hostgroup         = 21
     max_connections   = 250
@@ -120,7 +120,7 @@ mysql_servers =
     use_ssl           = 1
   },
   {
-    address           = "mysql-us2-tertiary.mysql.svc.cluster.local"
+    address           = "mysql-us2-replica1.mysql.svc.cluster.local"
     port              = 3306
     hostgroup         = 22
     max_connections   = 250
@@ -143,54 +143,54 @@ mysql_users:
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us1"
-    password                = "persona-web-us1"
-    default_schema          = "persona-web-us1"
+    username                = "web-us1"
+    password                = "web-us1"
+    default_schema          = "web-us1"
     default_hostgroup       = 10
     active                  = 1
     transaction_persistent  = 1
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us1-ro1"
-    password                = "persona-web-us1-ro1"
-    default_schema          = "persona-web-us1"
+    username                = "web-us1-ro1"
+    password                = "web-us1-ro1"
+    default_schema          = "web-us1"
     default_hostgroup       = 11
     active                  = 1
     transaction_persistent  = 1
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us1-ro2"
-    password                = "persona-web-us1-ro2"
-    default_schema          = "persona-web-us1"
+    username                = "web-us1-ro2"
+    password                = "web-us1-ro2"
+    default_schema          = "web-us1"
     default_hostgroup       = 12
     active                  = 1
     transaction_persistent  = 1
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us2"
-    password                = "persona-web-us2"
-    default_schema          = "persona-web-us2"
+    username                = "web-us2"
+    password                = "web-us2"
+    default_schema          = "web-us2"
     default_hostgroup       = 20
     active                  = 1
     transaction_persistent  = 1
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us2-ro1"
-    password                = "persona-web-us2-ro1"
-    default_schema          = "persona-web-us2"
+    username                = "web-us2-ro1"
+    password                = "web-us2-ro1"
+    default_schema          = "web-us2"
     default_hostgroup       = 21
     active                  = 1
     transaction_persistent  = 1
     max_connections         = 2500
   },
   {
-    username                = "persona-web-us2-ro2"
-    password                = "persona-web-us2-ro2"
-    default_schema          = "persona-web-us2"
+    username                = "web-us2-ro2"
+    password                = "web-us2-ro2"
+    default_schema          = "web-us2"
     default_hostgroup       = 22
     active                  = 1
     transaction_persistent  = 1

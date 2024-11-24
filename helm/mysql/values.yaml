@@ -85,7 +85,7 @@ diagnosticMode:
 image:
   registry: docker.io
   repository: bitnami/mysql
-  tag: 8.0.35-debian-11-r2
+  tag: 8.0.36-debian-11-r4
   digest: ""
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -153,7 +153,7 @@ auth:
   ## @param auth.defaultAuthenticationPlugin Sets the default authentication plugin, by default it will use `mysql_native_password`
   ## NOTE: `mysql_native_password` will be deprecated in future mysql version and it is used here for compatibility with previous version. If you want to use the new default authentication method set it to `caching_sha2_password`.
   ##
-  defaultAuthenticationPlugin: ""
+  defaultAuthenticationPlugin: "caching_sha2_password"
 ## @param initdbScripts Dictionary of initdb scripts
 ## Specify dictionary of scripts to be run at first boot
 ## Example:
@@ -204,7 +204,7 @@ primary:
   ##
   configuration: |-
     [mysqld]
-    default_authentication_plugin={{- .Values.auth.defaultAuthenticationPlugin | default "mysql_native_password" }}
+    default_authentication_plugin={{- .Values.auth.defaultAuthenticationPlugin | default "caching_sha2_password" }}
     skip-name-resolve
     explicit_defaults_for_timestamp
     basedir=/opt/bitnami/mysql
@@ -217,14 +217,20 @@ primary:
     bind-address=*
     pid-file=/opt/bitnami/mysql/tmp/mysqld.pid
     log-error=/opt/bitnami/mysql/logs/mysqld.log
-    character-set-server=UTF8
-    slow_query_log=0
-    long_query_time=10.0
+    character-set-server=UTF8MB4
+    slow_query_log=1
+    long_query_time=1.0
+
+    bind-address=0.0.0.0
+    server-id=1
+    log_bin=/opt/bitnami/mysql/tmp/mysql-bin.log
+    gtid_mode=ON
+    enforce-gtid-consistency=ON
 
     [client]
     port=3306
     socket=/opt/bitnami/mysql/tmp/mysql.sock
-    default-character-set=UTF8
+    default-character-set=UTF8MB4
     plugin_dir=/opt/bitnami/mysql/lib/plugin
 
     [manager]
@@ -583,7 +589,7 @@ primary:
 secondary:
   ## @param secondary.name Name of the secondary database (eg secondary, slave, ...)
   ##
-  name: secondary
+  name: replica0
   ## @param secondary.replicaCount Number of MySQL secondary replicas
   ##
   replicaCount: 1
@@ -605,7 +611,7 @@ secondary:
   ##
   configuration: |-
     [mysqld]
-    default_authentication_plugin=mysql_native_password
+    default_authentication_plugin=caching_sha2_password
     skip-name-resolve
     explicit_defaults_for_timestamp
     basedir=/opt/bitnami/mysql
@@ -618,14 +624,21 @@ secondary:
     bind-address=*
     pid-file=/opt/bitnami/mysql/tmp/mysqld.pid
     log-error=/opt/bitnami/mysql/logs/mysqld.log
-    character-set-server=UTF8
+    character-set-server=UTF8MB4
     slow_query_log=0
     long_query_time=10.0
+
+    bind-address=0.0.0.0
+    server-id=2
+    log_bin=/opt/bitnami/mysql/tmp/mysql-bin.log
+    gtid_mode=ON
+    enforce-gtid-consistency=ON
+
 
     [client]
     port=3306
     socket=/opt/bitnami/mysql/tmp/mysql.sock
-    default-character-set=UTF8
+    default-character-set=UTF8MB4
     plugin_dir=/opt/bitnami/mysql/lib/plugin
 
     [manager]
@@ -979,10 +992,13 @@ secondary:
   ##
   podLabels: {}
 
+## @section MySQL Tertiary parameters
+##
+
 tertiary:
   ## @param tertiary.name Name of the tertiary database (eg tertiary, slave, ...)
   ##
-  name: tertiary
+  name: replica1
   ## @param tertiary.replicaCount Number of MySQL tertiary replicas
   ##
   replicaCount: 1
@@ -1004,10 +1020,10 @@ tertiary:
   ##
   configuration: |-
     [mysqld]
-    default_authentication_plugin=mysql_native_password
+    default_authentication_plugin=caching_sha2_password
     skip-name-resolve
     explicit_defaults_for_timestamp
-    basedir=/opt/bitnami/mysql
+    basedir=/opt/bitnami/mysqcaching_sha2_passwordl
     plugin_dir=/opt/bitnami/mysql/lib/plugin
     port=3306
     socket=/opt/bitnami/mysql/tmp/mysql.sock
@@ -1017,14 +1033,20 @@ tertiary:
     bind-address=*
     pid-file=/opt/bitnami/mysql/tmp/mysqld.pid
     log-error=/opt/bitnami/mysql/logs/mysqld.log
-    character-set-server=UTF8
+    character-set-server=UTF8MB4
     slow_query_log=0
     long_query_time=10.0
+
+    bind-address=0.0.0.0
+    server-id=1
+    log_bin=/opt/bitnami/mysql/tmp/mysql-bin.log
+    gtid_mode=ON
+    enforce-gtid-consistency=ON
 
     [client]
     port=3306
     socket=/opt/bitnami/mysql/tmp/mysql.sock
-    default-character-set=UTF8
+    default-character-set=UTF8MB4
     plugin_dir=/opt/bitnami/mysql/lib/plugin
 
     [manager]
@@ -1377,7 +1399,6 @@ tertiary:
   ## @param tertiary.podLabels Additional pod labels for MySQL tertiary pods
   ##
   podLabels: {}
-
 
 ## @section RBAC parameters
 ##

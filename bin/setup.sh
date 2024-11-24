@@ -12,9 +12,9 @@ fi
 DIR=$(dirname -- "${BASH_SOURCE[0]}")
 
 # Build the customized (sorta) ProxySQL docker image
-pushd "$DIR/../helm/proxysql"
-  docker build -t persona-id/proxysql . -t persona-id/proxysql:latest -t persona-id/proxysql:1.1.1
-popd
+# pushd "$DIR/../helm/proxysql"
+#   docker build -t persona-id/proxysql . -t persona-id/proxysql:latest -t persona-id/proxysql:1.1.1
+# popd
 
 # Create the mysql infra
 
@@ -22,42 +22,43 @@ popd
 kubectl get namespace mysql > /dev/null 2>&1 \
   || kubectl create ns mysql
 
-## Create some Configmaps that hold the MySQL init scripts, if they don't already exist
+## US1
 kubectl get configmap -n mysql us1-initdb > /dev/null 2>&1 \
   || kubectl create configmap -n mysql us1-initdb --from-file="$DIR/../helm/data/mysql-us1.sql"
-kubectl get configmap -n mysql us2-initdb > /dev/null 2>&1 \
-  || kubectl create configmap -n mysql us2-initdb --from-file="$DIR/../helm/data/mysql-us2.sql"
 
-## Install the MySQL us1 and us2 instances, each of which has 1 replica
 helm install mysql-us1 -n mysql "$DIR/../helm/mysql" \
   --set nameOverride="mysql-us1" \
   --set architecture="replication" \
   --set auth.rootPassword="rootpw" \
   --set auth.replicationPassword="replication" \
-  --set auth.database="persona-web-us1" \
-  --set auth.username="persona-web-us1" \
-  --set auth.password="persona-web-us1" \
+  --set auth.database="web-us1" \
+  --set auth.username="web-us1" \
+  --set auth.password="web-us1" \
   --set initdbScriptsConfigMap="us1-initdb"
+
+## US2
+kubectl get configmap -n mysql us2-initdb > /dev/null 2>&1 \
+  || kubectl create configmap -n mysql us2-initdb --from-file="$DIR/../helm/data/mysql-us2.sql"
 
 helm install mysql-us2 -n mysql "$DIR/../helm/mysql" \
   --set nameOverride="mysql-us2" \
   --set architecture="replication" \
   --set auth.rootPassword="rootpw" \
   --set auth.replicationPassword="replication" \
-  --set auth.database="persona-web-us2" \
-  --set auth.username="persona-web-us2" \
-  --set auth.password="persona-web-us2" \
+  --set auth.database="web-us2" \
+  --set auth.username="web-us2" \
+  --set auth.password="web-us2" \
   --set initdbScriptsConfigMap="us2-initdb"
 
-helm install proxysql -n mysql "$DIR/../helm/mysql" \
-  --set nameOverride="proxysql" \
-  --set architecture="standalone" \
-  --set auth.rootPassword="rootpw" \
-  --set auth.database="proxysql" \
-  --set auth.username="proxysql" \
-  --set auth.password="proxysql"
+# helm install proxysql -n mysql "$DIR/../helm/mysql" \
+#   --set nameOverride="proxysql" \
+#   --set architecture="standalone" \
+#   --set auth.rootPassword="rootpw" \
+#   --set auth.database="proxysql" \
+#   --set auth.username="proxysql" \
+#   --set auth.password="proxysql"
 
-# End MySQL
+## End MySQL
 
 echo "Sleeping 10s to allow mysql to finish coming up"
 sleep 10

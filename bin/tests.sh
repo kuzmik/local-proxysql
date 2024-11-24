@@ -18,39 +18,39 @@ us1_primary_ro=$(mysql --defaults-extra-file="$DIR/.lib/us1-client.cfg" -h"$prox
 assert_eq "0" "$us1_primary_ro" "Not equivalent"
 log_success  "us1_primary readonly flag: 0 == $us1_primary_ro"
 
-us1_user=$(mysql --defaults-extra-file="$DIR/.lib/us1-client.cfg"  -h"$proxysql_instance" -P6033  persona-web-us1 -NB -e 'select email from users where id = 1')
-assert_eq "rick@persona-us1.com" "$us1_user" "Not equivalent"
-log_success "us1_primary user: rick@persona-us1.com == $us1_user"
+us1_user=$(mysql --defaults-extra-file="$DIR/.lib/us1-client.cfg"  -h"$proxysql_instance" -P6033  web-us1 -NB -e 'select email from users where id = 1')
+assert_eq "rick@us1.com" "$us1_user" "Not equivalent"
+log_success "us1_primary user: rick@us1.com == $us1_user"
 
 ###
-log_header "us1 secondary"
+log_header "us1 replica0"
 
 us1_ro_hostname=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro1-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@hostname')
-assert_eq "mysql-us1-secondary-0" "$us1_ro_hostname" "Not equivalent"
-log_success  "us1_secondary hostname: mysql-us1-secondary-0 == $us1_ro_hostname"
+assert_eq "mysql-us1-replica0-0" "$us1_ro_hostname" "Not equivalent"
+log_success  "us1_replica0 hostname: mysql-us1-replica0-0 == $us1_ro_hostname"
 
-us1_secondary_ro=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro1-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
-assert_eq "1" "$us1_secondary_ro" "Not equivalent"
-log_success  "us1_secondary readonly flag: 1 == $us1_secondary_ro"
+us1_replica0_ro=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro1-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
+assert_eq "1" "$us1_replica0_ro" "Not equivalent"
+log_success  "us1_replica0 readonly flag: 1 == $us1_replica0_ro"
 
-us1_secondary_user=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro1-client.cfg"  -h"$proxysql_instance" -P6033  persona-web-us1 -NB -e 'select email from users where id = 1')
-assert_eq "rick@persona-us1.com" "$us1_secondary_user" "Not equivalent"
-log_success  "us1_secondary user: rick@persona-us1.com == $us1_secondary_user"
+us1_replica0_user=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro1-client.cfg"  -h"$proxysql_instance" -P6033  web-us1 -NB -e 'select email from users where id = 1')
+assert_eq "rick@us1.com" "$us1_replica0_user" "Not equivalent"
+log_success  "us1_replica0 user: rick@us1.com == $us1_replica0_user"
 
 ###
-log_header "us1 tertiary"
+log_header "us1 replica1"
 
-us1_tertiary_hostname=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@hostname')
-assert_eq "mysql-us1-tertiary-0" "$us1_tertiary_hostname" "Not equivalent"
-log_success  "us1_tertiary hostname: mysql-us1-tertiary-0 == $us1_tertiary_hostname"
+us1_replica1_hostname=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@hostname')
+assert_eq "mysql-us1-replica1-0" "$us1_replica1_hostname" "Not equivalent"
+log_success  "us1_replica1 hostname: mysql-us1-replica1-0 == $us1_replica1_hostname"
 
-us1_tertiary_ro=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
-assert_eq "1" "$us1_tertiary_ro" "Not equivalent"
-log_success  "us1_tertiary readonly flag: 1 == $us1_tertiary_ro"
+us1_replica1_ro=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
+assert_eq "1" "$us1_replica1_ro" "Not equivalent"
+log_success  "us1_replica1 readonly flag: 1 == $us1_replica1_ro"
 
-us1_secondary_user=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro2-client.cfg"  -h"$proxysql_instance" -P6033  persona-web-us1 -NB -e 'select email from users where id = 1')
-assert_eq "rick@persona-us1.com" "$us1_secondary_user" "Not equivalent"
-log_success  "us1_tertiary user: rick@persona-us1.com == $us1_secondary_user"
+us1_replica0_user=$(mysql --defaults-extra-file="$DIR/.lib/us1-ro2-client.cfg"  -h"$proxysql_instance" -P6033  web-us1 -NB -e 'select email from users where id = 1')
+assert_eq "rick@us1.com" "$us1_replica0_user" "Not equivalent"
+log_success  "us1_replica1 user: rick@us1.com == $us1_replica0_user"
 
 ###
 log_header "us2 primary"
@@ -63,39 +63,39 @@ us2_primary_ro=$(mysql --defaults-extra-file="$DIR/.lib/us2-client.cfg" -h"$prox
 assert_eq "0" "$us2_primary_ro" "Not equivalent"
 log_success  "us2_primary readonly flag: 0 == $us2_primary_ro"
 
-us2_user=$(mysql --defaults-extra-file="$DIR/.lib/us2-client.cfg"  -h"$proxysql_instance" -P6033  persona-web-us2 -NB -e 'select email from users where id = 1')
-assert_eq "charles@persona-us2.com" "$us2_user" "Not equivalent"
-log_success  "us2_primary user: charles@persona-us2.com == $us2_user"
+us2_user=$(mysql --defaults-extra-file="$DIR/.lib/us2-client.cfg"  -h"$proxysql_instance" -P6033  web-us2 -NB -e 'select email from users where id = 1')
+assert_eq "charles@us2.com" "$us2_user" "Not equivalent"
+log_success  "us2_primary user: charles@us2.com == $us2_user"
 
 ###
-log_header "us2 secondary"
+log_header "us2 replica0"
 
 us2_ro_hostname=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro1-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@hostname')
-assert_eq "mysql-us2-secondary-0" "$us2_ro_hostname" "Not equivalent"
-log_success  "us2_secondary hostname: mysql-us2-secondary-0 == $us2_ro_hostname"
+assert_eq "mysql-us2-replica0-0" "$us2_ro_hostname" "Not equivalent"
+log_success  "us2_replica0 hostname: mysql-us2-replica0-0 == $us2_ro_hostname"
 
-us2_secondary_ro=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro1-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
-assert_eq "1" "$us2_secondary_ro" "Not equivalent"
-log_success  "us2_secondary readonly flag: 1 == $us2_secondary_ro"
+us2_replica0_ro=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro1-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
+assert_eq "1" "$us2_replica0_ro" "Not equivalent"
+log_success  "us2_replica0 readonly flag: 1 == $us2_replica0_ro"
 
-us2_secondary_user=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro1-client.cfg"  -h"$proxysql_instance" -P6033  persona-web-us2 -NB -e 'select email from users where id = 1')
-assert_eq "charles@persona-us2.com" "$us2_secondary_user" "Not equivalent"
-log_success  "us2_secondary user: charles@persona-us2.com == $us2_secondary_user"
+us2_replica0_user=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro1-client.cfg"  -h"$proxysql_instance" -P6033  web-us2 -NB -e 'select email from users where id = 1')
+assert_eq "charles@us2.com" "$us2_replica0_user" "Not equivalent"
+log_success  "us2_replica0 user: charles@us2.com == $us2_replica0_user"
 
 ###
-log_header "us2 tertiary"
+log_header "us2 replica1"
 
-us2_tertiary_hostname=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@hostname')
-assert_eq "mysql-us2-tertiary-0" "$us2_tertiary_hostname" "Not equivalent"
-log_success  "us2_tertiary hostname: mysql-us2-tertiary-0 == $us2_tertiary_hostname"
+us2_replica1_hostname=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@hostname')
+assert_eq "mysql-us2-replica1-0" "$us2_replica1_hostname" "Not equivalent"
+log_success  "us2_replica1 hostname: mysql-us2-replica1-0 == $us2_replica1_hostname"
 
-us2_tertiary_ro=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
-assert_eq "1" "$us2_tertiary_ro" "Not equivalent"
-log_success  "us2_tertiary readonly flag: 1 == $us2_tertiary_ro"
+us2_replica1_ro=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro2-client.cfg" -h"$proxysql_instance" -P6033 -NB -e 'select @@global.read_only')
+assert_eq "1" "$us2_replica1_ro" "Not equivalent"
+log_success  "us2_replica1 readonly flag: 1 == $us2_replica1_ro"
 
-us2_tertiary_user=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro2-client.cfg"  -h"$proxysql_instance" -P6033  persona-web-us2 -NB -e 'select email from users where id = 1')
-assert_eq "charles@persona-us2.com" "$us2_tertiary_user" "Not equivalent"
-log_success  "us2_tertiary user: charles@persona-us2.com == $us2_tertiary_user"
+us2_replica1_user=$(mysql --defaults-extra-file="$DIR/.lib/us2-ro2-client.cfg"  -h"$proxysql_instance" -P6033  web-us2 -NB -e 'select email from users where id = 1')
+assert_eq "charles@us2.com" "$us2_replica1_user" "Not equivalent"
+log_success  "us2_replica1 user: charles@us2.com == $us2_replica1_user"
 
 
 echo ''

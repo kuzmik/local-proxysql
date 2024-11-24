@@ -1,14 +1,14 @@
 replicaCount: 3
 
 image:
-  # pointing to the local (on my laptop) proxysql image
-  repository: persona-id/proxysql
-  tag: 1.1.0
-  pullPolicy: Never
-  ## to use the official images
-  # repository: proxysql/proxysql
-  # tag: 2.5.5-debian
+  ## to use to the locally built proxysql image
+  # repository: persona-id/proxysql
+  # tag: 1.1.0
   # pullPolicy: Never
+  ## to use the official images
+  repository: proxysql/proxysql
+  tag: 2.6.5-debian
+  pullPolicy: Always
 
 # proxysql-agent sidecar config
 # FIXME: this is a separate repo
@@ -16,9 +16,13 @@ agentSidecar:
   enabled: true
   image:
     # points to the local (on my laptop) persona-id/proxysql-agent
-    repository: persona-id/proxysql-agent
-    tag: 1.1.1
-    pullPolicy: Never
+    # repository: persona-id/proxysql-agent
+    # tag: 1.1.1
+    # pullPolicy: Never
+    ## to use official image
+    repository: ghcr.io/persona-id/proxysql-agent
+    tag: v1.1.2
+    pullPolicy: Always
 
 imagePullSecrets: []
 
