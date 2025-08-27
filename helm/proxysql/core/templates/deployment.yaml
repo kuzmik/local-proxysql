@@ -1,12 +1,11 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: {{ include "proxysql.fullname" . }}
   labels:
 {{ include "proxysql.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  serviceName: {{ include "proxysql.fullname" . }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "proxysql.name" . }}
@@ -26,20 +25,18 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      # initContainers:
-      #   # sample init container, will be used for secrets work in the future
-      #   - name: install
-      #     image: busybox:1.28
-      #     command:
-      #     - env
-      #     volumeMounts:
-      #     - name: proxysql-var
-      #       mountPath: "/proxysql"
       containers:
         {{- if .Values.agentSidecar.enabled }}
         - name: proxysql-agent
           image: "{{ .Values.agentSidecar.image.repository }}:{{ .Values.agentSidecar.image.tag }}"
           imagePullPolicy: {{ .Values.agentSidecar.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                # sleep for 5 minutes, so that the sidecar remains up long enough to kill proxysql
+                # itself. Once proxysql is shutdown, this container issues an os.Exit(0) so it will
+                # likely never actually be 5 minutes.
+                command: ["/bin/sh", "-c", "echo 'sleeping for up to 300s while proxysql gracefully shuts down'; sleep 300"]
           command:
             - /app/proxysql-agent
             - --start_delay=5
@@ -78,7 +75,6 @@ spec:
               - all
             runAsNonRoot: true
             runAsUser: 1000
-          volumeMounts:
           volumeMounts:
             - mountPath: /var/lib/proxysql
               name: proxysql-var

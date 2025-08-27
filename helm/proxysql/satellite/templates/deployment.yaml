@@ -18,20 +18,12 @@ spec:
         app: proxysql
         component: satellite
     spec:
+      terminationGracePeriodSeconds: 30
       serviceAccountName: proxysql
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      # initContainers:
-      #   # sample init container, will be used for secrets work in the future
-      #   - name: install
-      #     image: busybox:1.28
-      #     command:
-      #     - env
-      #     volumeMounts:
-      #     - name: proxysql-var
-      #       mountPath: "/proxysql"
       containers:
         {{- if .Values.agentSidecar.enabled }}
         - name: proxysql-agent

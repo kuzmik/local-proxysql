@@ -7,11 +7,10 @@ image:
   # pullPolicy: Never
   ## to use the official images
   repository: proxysql/proxysql
-  tag: 2.6.5-debian
+  tag: 3.0.2-debian
   pullPolicy: Always
 
 # proxysql-agent sidecar config
-# FIXME: this is a separate repo
 agentSidecar:
   enabled: true
   image:
@@ -47,4 +46,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-

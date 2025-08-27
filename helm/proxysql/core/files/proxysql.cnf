@@ -1,216 +1,186 @@
-datadir="/var/lib/proxysql"
+datadir = "/var/lib/proxysql";
 
-# define the admin variables
-admin_variables=
-{
-  admin_credentials                           = "admin:admin;radmin:radmin"
-  cluster_check_interval_ms                   = 200
-  cluster_check_status_frequency              = 100
-  cluster_mysql_query_rules_diffs_before_sync = 3
-  cluster_mysql_query_rules_save_to_disk      = true
-  cluster_mysql_servers_diffs_before_sync     = 3
-  cluster_mysql_servers_save_to_disk          = true
-  cluster_mysql_users_diffs_before_sync       = 3
-  cluster_mysql_users_save_to_disk            = true
-  cluster_password                            = "radmin"
-  cluster_proxysql_servers_diffs_before_sync  = 3
-  cluster_proxysql_servers_save_to_disk       = true
-  cluster_username                            = "radmin"
-  mysql_ifaces                                = "0.0.0.0:6032"
-  refresh_interval                            = 2000
-  vacuum_stats                                = true
-  web_enabled                                 = false
-  web_port                                    = 6080
+admin_variables = {
+  admin_credentials                           = "admin:admin;radmin:radmin";
+  cluster_check_interval_ms                   = 200;
+  cluster_check_status_frequency              = 100;
+  cluster_mysql_query_rules_diffs_before_sync = 3;
+  cluster_mysql_query_rules_save_to_disk      = true;
+  cluster_mysql_servers_diffs_before_sync     = 3;
+  cluster_mysql_servers_save_to_disk          = true;
+  cluster_mysql_users_diffs_before_sync       = 3;
+  cluster_mysql_users_save_to_disk            = true;
+  cluster_password                            = "radmin";
+  cluster_proxysql_servers_diffs_before_sync  = 3;
+  cluster_proxysql_servers_save_to_disk       = true;
+  cluster_username                            = "radmin";
+  mysql_ifaces                                = "0.0.0.0:6032";
+  refresh_interval                            = 2000;
+  vacuum_stats                                = true;
+  web_enabled                                 = false;
+  web_port                                    = 6080;
 }
 
-mysql_variables=
-{
-  commands_stats                              = true
-  connect_retries_delay                       = 100
-  connect_retries_on_failure                  = 10
-  connect_timeout_server                      = 3000
-  default_query_delay                         = 0
-  default_query_timeout                       = 86400000
-  default_schema                              = "information_schema"
-  free_connections_pct                        = 50
-  have_compress                               = true
-  interfaces                                  = "0.0.0.0:6033;/tmp/proxysql.sock"
-  log_mysql_warnings_enabled                  = true
-  log_unhealthy_connections                   = false
-  max_connections                             = 1000
-  multiplexing                                = true
-  ping_interval_server_msec                   = 120000
-  ping_timeout_server                         = 500
-  poll_timeout                                = 2000
-  server_version                              = "8.0.28"
-  sessions_sort                               = true
-  show_processlist_extended                   = 1
-  stacksize                                   = 1048576
-  threads                                     = 2
-  verbose_query_error                         = true
+mysql_variables = {
+  commands_stats                              = true;
+  connect_retries_delay                       = 100;
+  connect_retries_on_failure                  = 10;
+  connect_timeout_server                      = 3000;
+  default_query_delay                         = 0;
+  default_query_timeout                       = 86400000;
+  default_schema                              = "information_schema";
+  free_connections_pct                        = 50;
+  have_compress                               = true;
+  have_ssl                                    = true;
+  interfaces                                  = "0.0.0.0:6033;/tmp/proxysql.sock";
+  log_mysql_warnings_enabled                  = true;
+  log_unhealthy_connections                   = false;
+  max_connections                             = 1000;
+  multiplexing                                = true;
+  ping_interval_server_msec                   = 120000;
+  ping_timeout_server                         = 500;
+  poll_timeout                                = 2000;
+  server_version                              = "8.0.28";
+  sessions_sort                               = true;
+  show_processlist_extended                   = 1;
+  stacksize                                   = 1048576;
+  threads                                     = 2;
+  verbose_query_error                         = true;
 
-  # this enables FRONTEND ssl support. backend is configured on a per-server basis in the mysql servers block
-  # or in our case, on a just one server basis.
-  have_ssl                                    = true
+  query_digests_keep_comment                  = true;
+  query_digests_lowercase                     = true;
+  query_digests_no_digits                     = false;
+  query_digests_normalize_digest_text         = false;
+  query_digests_replace_null                  = true;
 
-  query_digests_keep_comment                  = true
-  query_digests_lowercase                     = true
-  query_digests_no_digits                     = false
-  query_digests_normalize_digest_text         = false
-  query_digests_replace_null                  = true
-
-  monitor_username                            = "root"
-  monitor_password                            = "rootpw"
-  monitor_history                             = 600000
-  monitor_connect_interval                    = 20000
-  monitor_ping_interval                       = 10000
-  monitor_read_only_interval                  = 1500
-  monitor_read_only_timeout                   = 500
+  monitor_username                            = "root";
+  monitor_password                            = "rootpw";
+  monitor_history                             = 600000;
+  monitor_connect_interval                    = 20000;
+  monitor_ping_interval                       = 10000;
+  monitor_read_only_interval                  = 1500;
+  monitor_read_only_timeout                   = 500;
 }
 
 # defines all the MySQL servers
-mysql_servers =
-(
+mysql_servers = (
   {
-    address           = "proxysql.mysql.svc.cluster.local"
-    port              = 3306
-    hostgroup         = 1
-    max_connections   = 250
-    compression       = 1
-    use_ssl           = 1
+    address           = "mysql-us1-primary.mysql.svc.cluster.local";
+    port              = 3306;
+    hostgroup         = 10;
+    max_connections   = 250;
+    compression       = 1;
+    use_ssl           = 1;
   },
   {
-    address           = "mysql-us1-primary.mysql.svc.cluster.local"
-    port              = 3306
-    hostgroup         = 10
-    max_connections   = 250
-    compression       = 1
-    use_ssl           = 1
+    address           = "mysql-us1-replica0.mysql.svc.cluster.local";
+    port              = 3306;
+    hostgroup         = 11;
+    max_connections   = 250;
+    compression       = 1;
+    use_ssl           = 1;
   },
   {
-    address           = "mysql-us1-replica0.mysql.svc.cluster.local"
-    port              = 3306
-    hostgroup         = 11
-    max_connections   = 250
-    compression       = 1
-    use_ssl           = 1
+    address           = "mysql-us1-replica1.mysql.svc.cluster.local";
+    port              = 3306;
+    hostgroup         = 12;
+    max_connections   = 250;
+    compression       = 1;
+    use_ssl           = 1;
+  },
+  /*
+  {
+    address           = "mysql-us2-primary.mysql.svc.cluster.local";
+    port              = 3306;
+    hostgroup         = 20;
+    max_connections   = 250;
+    compression       = 1;
+    use_ssl           = 1;
   },
   {
-    address           = "mysql-us1-replica1.mysql.svc.cluster.local"
-    port              = 3306
-    hostgroup         = 12
-    max_connections   = 250
-    compression       = 1
-    use_ssl           = 1
+    address           = "mysql-us2-replica0.mysql.svc.cluster.local";
+    port              = 3306;
+    hostgroup         = 21;
+    max_connections   = 250;
+    compression       = 1;
+    use_ssl           = 1;
   },
   {
-    address           = "mysql-us2-primary.mysql.svc.cluster.local"
-    port              = 3306
-    hostgroup         = 20
-    max_connections   = 250
-    compression       = 1
-    use_ssl           = 1
+    address           = "mysql-us2-replica1.mysql.svc.cluster.local";
+    port              = 3306;
+    hostgroup         = 22;
+    max_connections   = 250;
+    compression       = 1;
+    use_ssl           = 1;
+  },
+  */
+)
+
+mysql_users = (
+  {
+    username                = "web-us1";
+    password                = "web-us1";
+    default_schema          = "web-us1";
+    default_hostgroup       = 10;
+    active                  = 1;
+    transaction_persistent  = 1;
+    max_connections         = 2500;
   },
   {
-    address           = "mysql-us2-replica0.mysql.svc.cluster.local"
-    port              = 3306
-    hostgroup         = 21
-    max_connections   = 250
-    compression       = 1
-    use_ssl           = 1
+    username                = "web-us1-ro1";
+    password                = "web-us1-ro1";
+    default_schema          = "web-us1";
+    default_hostgroup       = 11;
+    active                  = 1;
+    transaction_persistent  = 1;
+    max_connections         = 2500;
   },
   {
-    address           = "mysql-us2-replica1.mysql.svc.cluster.local"
-    port              = 3306
-    hostgroup         = 22
-    max_connections   = 250
-    compression       = 1
-    use_ssl           = 1
+    username                = "web-us1-ro2";
+    password                = "web-us1-ro2";
+    default_schema          = "web-us1";
+    default_hostgroup       = 12;
+    active                  = 1;
+    transaction_persistent  = 1;
+    max_connections         = 2500;
+  },
+  {
+    username                = "web-us2";
+    password                = "web-us2";
+    default_schema          = "web-us2";
+    default_hostgroup       = 20;
+    active                  = 1;
+    transaction_persistent  = 1;
+    max_connections         = 2500;
+  },
+  {
+    username                = "web-us2-ro1";
+    password                = "web-us2-ro1";
+    default_schema          = "web-us2";
+    default_hostgroup       = 21;
+    active                  = 1;
+    transaction_persistent  = 1;
+    max_connections         = 2500;
+  },
+  {
+    username                = "web-us2-ro2";
+    password                = "web-us2-ro2";
+    default_schema          = "web-us2";
+    default_hostgroup       = 22;
+    active                  = 1;
+    transaction_persistent  = 1;
+    max_connections         = 2500;
   },
 )
 
-
-# defines all the MySQL users
-mysql_users:
-(
+proxysql_servers = (
   {
-    username                = "proxysql"
-    password                = "proxysql"
-    default_schema          = "proxysql"
-    default_hostgroup       = 1
-    active                  = 1
-    transaction_persistent  = 1
-    max_connections         = 2500
-  },
-  {
-    username                = "web-us1"
-    password                = "web-us1"
-    default_schema          = "web-us1"
-    default_hostgroup       = 10
-    active                  = 1
-    transaction_persistent  = 1
-    max_connections         = 2500
-  },
-  {
-    username                = "web-us1-ro1"
-    password                = "web-us1-ro1"
-    default_schema          = "web-us1"
-    default_hostgroup       = 11
-    active                  = 1
-    transaction_persistent  = 1
-    max_connections         = 2500
-  },
-  {
-    username                = "web-us1-ro2"
-    password                = "web-us1-ro2"
-    default_schema          = "web-us1"
-    default_hostgroup       = 12
-    active                  = 1
-    transaction_persistent  = 1
-    max_connections         = 2500
-  },
-  {
-    username                = "web-us2"
-    password                = "web-us2"
-    default_schema          = "web-us2"
-    default_hostgroup       = 20
-    active                  = 1
-    transaction_persistent  = 1
-    max_connections         = 2500
-  },
-  {
-    username                = "web-us2-ro1"
-    password                = "web-us2-ro1"
-    default_schema          = "web-us2"
-    default_hostgroup       = 21
-    active                  = 1
-    transaction_persistent  = 1
-    max_connections         = 2500
-  },
-  {
-    username                = "web-us2-ro2"
-    password                = "web-us2-ro2"
-    default_schema          = "web-us2"
-    default_hostgroup       = 22
-    active                  = 1
-    transaction_persistent  = 1
-    max_connections         = 2500
-  },
+    hostname  = "proxysql-core";
+    port      = 6032;
+    weight    = 0;
+    comment   = "default servers from config";
+  }
 )
 
-# default proxysql-core service which fronts the proxysql-core stateful set; satellites connect to this
-# on boot (or on reload, if triggered by the agent) to fetch configuration from the pods
-proxysql_servers =
-(
-    {
-        hostname  = "proxysql-core"
-        port      = 6032
-        weight    = 0
-        comment   = "default servers from config"
-    }
-)
-
-# defines MySQL Query Rules
-mysql_query_rules:
-(
+mysql_query_rules = (
 )
