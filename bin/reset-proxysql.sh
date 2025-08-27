@@ -12,6 +12,12 @@ if [[ "$context" != "orbstack" ]] && [[ "$context" != "docker-desktop" ]] && [[ 
   exit 1
 fi
 
+# The charts currently use `persona-id/proxysql-agent:latest` from the local machine (not dockerhub or GHCR),
+# so we need to build that image locally
+pushd ../proxysql-agent
+  make docker
+popd
+
 DIR=$(dirname -- "${BASH_SOURCE[0]}")
 
 replicas=${1:-3}

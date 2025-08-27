@@ -14,14 +14,14 @@ image:
 agentSidecar:
   enabled: true
   image:
-    # points to the local (on my laptop) persona-id/proxysql-agent
-    # repository: persona-id/proxysql-agent
-    # tag: 1.1.1
-    # pullPolicy: Never
+    ## points to the local (on my laptop) persona-id/proxysql-agent
+    repository: persona-id/proxysql-agent
+    tag: latest
+    pullPolicy: Never
     ## to use official image
-    repository: ghcr.io/persona-id/proxysql-agent
-    tag: v1.1.2
-    pullPolicy: Always
+    # repository: ghcr.io/persona-id/proxysql-agent
+    # tag: v1.1.2
+    # pullPolicy: Always
 
 imagePullSecrets: []
 

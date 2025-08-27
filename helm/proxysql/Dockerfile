@@ -1,4 +1,7 @@
-FROM proxysql/proxysql:2.5.5
+# This is really used anymore since we deploy the stock proxysql image to our clusters,
+# but this may be useful for local dev at some point
+
+FROM proxysql/proxysql:3.0.2-debian
 
 # Install additional tools since ProxySQL Docker image is very bare-bones
 # Install Ruby (for the probes.rb), dig, etc
