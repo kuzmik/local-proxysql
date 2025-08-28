@@ -127,8 +127,8 @@ mysql_users = (
     max_connections         = 2500;
   },
   {
-    username                = "web-us1-ro1";
-    password                = "web-us1-ro1";
+    username                = "web-us1-ro0";
+    password                = "web-us1-ro0";
     default_schema          = "web-us1";
     default_hostgroup       = 11;
     active                  = 1;
@@ -136,14 +136,15 @@ mysql_users = (
     max_connections         = 2500;
   },
   {
-    username                = "web-us1-ro2";
-    password                = "web-us1-ro2";
+    username                = "web-us1-ro1";
+    password                = "web-us1-ro1";
     default_schema          = "web-us1";
     default_hostgroup       = 12;
     active                  = 1;
     transaction_persistent  = 1;
     max_connections         = 2500;
   },
+  /*
   {
     username                = "web-us2";
     password                = "web-us2";
@@ -171,6 +172,7 @@ mysql_users = (
     transaction_persistent  = 1;
     max_connections         = 2500;
   },
+  */
 )
 
 proxysql_servers = (
